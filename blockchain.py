@@ -1,6 +1,7 @@
 import hashlib
 import json
 from time import time
+from flask import Flask, jsonify
 
 
 class Blockchain(object):
@@ -59,3 +60,33 @@ class Blockchain(object):
         guess = f'{last_proof}{proof}'.encode()
         guess_hash = hashlib.sha256(guess).hexdigest()
         return guess_hash[:4] == "00"
+
+
+# Instantiate our Node
+app = Flask(__name__)
+
+# Instantiate the Blockchain class
+blockchain = Blockchain()
+
+
+@app.route('/mine', methods=['GET'])
+def mine():
+    return "Mine a new Block"
+
+
+@app.route('/transactions/new', methods=['POST'])
+def new_transaction():
+    return "Add a new transaction"
+
+
+@app.route('/chain', methods=['GET'])
+def full_chain():
+    response = {
+        'chain': blockchain.chain,
+        'length': len(blockchain.chain),
+    }
+    return jsonify(response), 200
+
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
